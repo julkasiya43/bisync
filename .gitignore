@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+data/
+scratch_pdf_sample.txt
+standards_extracted.txt
+ids.txt
+*.log
+.DS_Store

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIS Standards Recommendation Engine</title>
+    <meta name="description" content="AI-powered search for Bureau of Indian Standards">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>BIS Standards Recommendation</h1>
+            <p>Describe your product to instantly find the relevant Bureau of Indian Standards.</p>
+        </header>
+
+        <main>
+            <div class="search-container glass">
+                <form id="searchForm">
+                    <button type="button" id="micButton" class="mic-btn" title="Search with Voice">
+                        🎤
+                    </button>
+                    <input type="text" id="searchInput" placeholder="e.g., 33 Grade Ordinary Portland Cement..." autocomplete="off" required>
+                    <button type="submit" id="searchButton">
+                        <span>Search</span>
+                    </button>
+                </form>
+            </div>
+
+            <div id="loading" class="hidden">
+                <div class="spinner"></div>
+                <p>Analyzing standards...</p>
+            </div>
+
+            <div id="resultsContainer" class="results-container hidden">
+                <div class="results-header">
+                    <h2>Recommended Standards</h2>
+                    <div>
+                        <span id="latencyBadge" class="badge"></span>
+                        <button id="exportBtn" class="btn-secondary" style="margin-left: 10px;">Export CSV</button>
+                    </div>
+                </div>
+                <div id="cardsWrapper" class="cards-wrapper">
+                    <!-- Cards will be injected here -->
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Powered by AI • Hackathon Submission</p>
+        </footer>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chatModal" class="modal hidden">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3 id="chatModalTitle">Talk to Standard</h3>
+                <span id="closeModal" class="close">&times;</span>
+            </div>
+            <div id="chatHistory" class="chat-history">
+                <div class="bot-msg">Hi! Ask me any specific compliance questions about this standard.</div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chatInput" placeholder="Type your question..." autocomplete="off">
+                <button id="sendChatBtn">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
