@@ -1,4 +1,4 @@
-# BIS Standards Recommendation Engine
+# BISync: AI Standards Recommendation Engine
 
 This is a Retrieval-Augmented Generation (RAG) prototype built for the BIS Standards Recommendation Engine Hackathon. It identifies relevant Bureau of Indian Standards (BIS) regulations based on product descriptions, specifically focusing on Building Materials.
 
