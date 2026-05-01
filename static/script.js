@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                         <div class="card-actions">
                             <button class="chat-btn" data-id="${item.id}">Talk to Standard 💬</button>
-                            <a href="https://www.google.com/search?q=site:bis.gov.in+${encodeURIComponent(item.id)}" target="_blank" class="bis-btn">View on BIS 🔗</a>
+                            <a href="https://www.services.bis.gov.in/php/BIS_2.0/bisconnect/knowyourstandards/indian_standards/isdetails" target="_blank" class="bis-btn">View on BIS Portal 🔗</a>
                         </div>
                     `;
                     cardsWrapper.appendChild(card);
