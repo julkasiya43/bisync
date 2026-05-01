@@ -26,7 +26,7 @@ def main():
 
     print("Initializing pipeline components...")
     retriever = Retriever(db_dir="data")
-    llm_engine = LLMEngine(model_id="google/flan-t5-small")
+    llm_engine = LLMEngine()
 
     results = []
     print(f"Processing {len(data)} queries...")

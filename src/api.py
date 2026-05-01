@@ -17,7 +17,7 @@ app = FastAPI(title="BIS Standards Recommendation Engine")
 # Initialize models
 print("Initializing RAG models for API...")
 retriever = Retriever(db_dir="data")
-llm_engine = LLMEngine(model_id="google/flan-t5-small")
+llm_engine = LLMEngine()
 print("Initialization complete.")
 
 class QueryRequest(BaseModel):
