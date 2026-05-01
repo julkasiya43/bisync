@@ -116,7 +116,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         <div class="card-content">
                             ${highlightKeywords(item.snippet, query)}
                         </div>
-                        <button class="chat-btn" data-id="${item.id}">Talk to Standard 💬</button>
+                        <div class="card-actions">
+                            <button class="chat-btn" data-id="${item.id}">Talk to Standard 💬</button>
+                            <a href="https://www.google.com/search?q=site:bis.gov.in+${encodeURIComponent(item.id)}" target="_blank" class="bis-btn">View on BIS 🔗</a>
+                        </div>
                     `;
                     cardsWrapper.appendChild(card);
                     
