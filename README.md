@@ -32,6 +32,7 @@ Then, open your browser and navigate to `http://localhost:8056`.
 - **"Talk to Standard" Chat:** Click the chat button on any recommended standard to ask specific compliance questions. The AI will stream the answer in real-time.
 - **Voice Search:** Use the microphone icon to verbally describe your product instead of typing.
 - **Smart Highlighting:** Keywords from your query are dynamically highlighted in the standard snippets.
+- **Official BIS Links:** Directly access the official BIS 'Know Your Standards' portal for any recommended standard.
 - **3D Magnetic Hover:** Results cards tilt towards your mouse cursor with an aesthetic 3D effect.
 
 ## Running Inference
@@ -49,4 +50,4 @@ python eval_script.py --results team_results.json
 ## System Architecture & Strategy
 - **Chunking Strategy**: A precise text-extraction method that uses Regex (`SUMMARY OF IS...`) to group each standard and its summary into one contiguous chunk.
 - **Retrieval Strategy**: Utilizes `BAAI/bge-small-en-v1.5` dense embeddings mapped into a FAISS L2 index for extremely fast nearest-neighbor retrieval.
-- **LLM Pipeline**: We use `google/flan-t5-small` alongside rule-based fallbacks to ensure `< 5 seconds` latency while extracting the correct `IS XXXX : YYYY` format strictly. No external APIs are used to maintain complete data privacy.
+- **LLM Pipeline**: We use `google/flan-t5-small` with highly optimized greedy decoding (`num_beams=1`, `early_stopping=True`, strictly bounded token generation) alongside rule-based fallbacks to ensure `< 0.5 seconds` latency while extracting the correct `IS XXXX : YYYY` format precisely. No external APIs are used to maintain complete data privacy.
