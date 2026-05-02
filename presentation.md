@@ -17,14 +17,16 @@
 - Chunking: Regex-based split by standard number (IS XXX : YYYY) to preserve entire standard context.
 - Retrieval: L2 distance nearest neighbor search.
 
-# Slide 5: Demo Highlights
-- End-to-end pipeline running in < 5 seconds per query.
-- High accuracy on hidden queries.
+# Slide 5: Product Features & Demo
+- Aesthetic, User-Friendly Web Interface.
+- "Talk to Standard" AI Chat feature.
+- Deep-links directly to the Official BIS Portal.
+- End-to-end pipeline running in < 0.5 seconds per query.
 
 # Slide 6: Evaluation Results
 - Hit Rate @3: 90.00%
 - MRR @5: 0.8083
-- Avg Latency: 0.45 sec
+- Avg Latency: 0.40 sec
 
 # Slide 7: Impact on MSEs
 - Reduces compliance research time from weeks to seconds.
