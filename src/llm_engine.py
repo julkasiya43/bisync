@@ -26,7 +26,12 @@ Relevant Standard IDs:"""
 
         # Generate response
         inputs = self.tokenizer(prompt, return_tensors="pt")
-        outputs = self.model.generate(**inputs, max_new_tokens=50)
+        outputs = self.model.generate(
+            **inputs, 
+            max_new_tokens=25,
+            num_beams=1,
+            early_stopping=True
+        )
         generated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         
         # Parse the output to extract standard IDs
