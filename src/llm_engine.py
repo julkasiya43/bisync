@@ -1,53 +1,42 @@
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 import re
 
 class LLMEngine:
-    def __init__(self, model_id="Qwen/Qwen2.5-1.5B-Instruct"):
-        print(f"Loading LLM: {model_id} (This may take a minute...)")
-        
-        # Qwen 2.5 is completely UNGATED! No HuggingFace login required!
+    def __init__(self, model_id="google/flan-t5-small"):
+        print(f"Loading LLM: {model_id}...")
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
-        
-        # Load in float32 for CPU by default, or bfloat16 for modern GPUs.
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_id, 
-            torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
-            device_map="auto" if torch.cuda.is_available() else "cpu"
-        )
-        
-        self.pipeline = pipeline(
-            "text-generation",
-            model=self.model,
-            tokenizer=self.tokenizer
-        )
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
         
     def extract_standards(self, query, retrieved_chunks):
-        # Format the context
+        # Format the prompt
         context = ""
         for i, chunk in enumerate(retrieved_chunks):
+            # Include the standard ID explicitly in the context to help the LLM extract it
             context += f"Option {i+1}: Standard ID: {chunk['standard_id']}. Content: {chunk['content'][:150]}...\n"
             
-        # Llama 3 uses specific chat templates for instructions
-        messages = [
-            {"role": "system", "content": "You are a Bureau of Indian Standards (BIS) recommendation expert. Output ONLY the comma-separated standard IDs (e.g., IS 1234 : 2020) and nothing else."},
-            {"role": "user", "content": f"Based on the following options, identify the standard IDs that best match the query.\n\nQuery: {query}\nOptions:\n{context}\nRelevant Standard IDs:"}
-        ]
+        prompt = f"""
+You are a Bureau of Indian Standards (BIS) recommendation expert.
+Based on the following options, identify the standard IDs that best match the query.
+Return the standard IDs as a comma-separated list.
+
+Query: {query}
+Options:
+{context}
+Relevant Standard IDs:"""
 
         # Generate response
-        outputs = self.pipeline(
-            messages, 
-            max_new_tokens=50, 
-            do_sample=False,  # Keep it deterministic for extraction
-            return_full_text=False # Don't return the prompt
-        )
-        generated_text = outputs[0]["generated_text"].strip()
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        outputs = self.model.generate(**inputs, max_new_tokens=50)
+        generated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         
         # Parse the output to extract standard IDs
+        # Look for "IS XXX: YYYY" patterns in the output
         extracted_ids = re.findall(r'(IS\s+\d+(?:\s*\(Part\s*\d+\))?\s*:\s*\d{4})', generated_text, re.IGNORECASE)
         
-        # Fallback to pure retrieval result if formatting failed
+        # If the LLM output is poorly formatted or didn't extract properly, 
+        # fallback to the top 5 retrieved standard IDs. This ensures robustness.
         if not extracted_ids:
+            # Fallback to pure retrieval result
             extracted_ids = [chunk['standard_id'] for chunk in retrieved_chunks[:5]]
             
         # Deduplicate and clean
@@ -59,6 +48,7 @@ class LLMEngine:
                 
         # Ensure we return top 3-5
         if len(final_standards) < 3:
+            # Append from retrieval if missing
             for chunk in retrieved_chunks:
                 if chunk['standard_id'] not in final_standards:
                     final_standards.append(chunk['standard_id'])
@@ -68,17 +58,18 @@ class LLMEngine:
         return final_standards[:5]
 
     def answer_question(self, standard_id, context, question):
-        messages = [
-            {"role": "system", "content": "You are a Bureau of Indian Standards (BIS) compliance assistant. Answer the user's question based strictly on the provided standard context. Keep it concise."},
-            {"role": "user", "content": f"Standard ID: {standard_id}\nContext: {context[:1500]}\n\nQuestion: {question}"}
-        ]
+        prompt = f"""
+You are a Bureau of Indian Standards (BIS) compliance assistant.
+Answer the user's question based strictly on the provided standard context.
+If the context does not contain the answer, say "I don't have enough information to answer that."
 
-        outputs = self.pipeline(
-            messages, 
-            max_new_tokens=150,
-            do_sample=True,
-            temperature=0.3, # Slight creativity for natural chat
-            return_full_text=False
-        )
-        generated_text = outputs[0]["generated_text"].strip()
-        return generated_text
+Standard ID: {standard_id}
+Context: {context[:1500]} 
+
+Question: {question}
+Answer:"""
+
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        outputs = self.model.generate(**inputs, max_new_tokens=150)
+        generated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return generated_text.strip()
